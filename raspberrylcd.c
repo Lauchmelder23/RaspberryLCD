@@ -229,7 +229,6 @@ void sendText(LCDScreen* screen, const char* text)
         else
         {
             sendData(screen, *c);
-            
         }
         
     }
