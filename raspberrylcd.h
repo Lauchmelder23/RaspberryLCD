@@ -151,6 +151,12 @@ extern void sendData(LCDScreen* screen, uint8_t data);
 extern void sendText(LCDScreen* screen, const char* text);
 extern void sendChars(LCDScreen* screen, unsigned int len, ...);
 
-extern void setCursor(LCDScreen* screen, uint8_t x, uint8_t y);
+#define clearScreen(screen)                                                     sendCommand(screen, SCREEN_CLEAR)
+#define returnCursor(screen)                                                    sendCommand(screen, CURSOR_RETURN)
+#define setWritingDirection(screen, direction)                                  sendCommand(screen, INPUT_SET | direction)
+#define setDisplaySettings(screen, display, cursor_shown, cursor_behaviour)     sendCommand(screen, DISPLAY_SWITCH | display | cursor_shown | cursor_behaviour)
+#define shiftCursor(screen, direction)                                          sendCommand(screen, SHIFT | CURSOR_SHIFT | direction)
+#define shiftScreen(screen, direction)                                          sendCommand(screen, SHIFT | DISPLAY_SHIFT | direction)
+#define setCursor(screen, x, y)                                                 sendCommand(screen, DDRAM_AD_SET | (y << 6) | x)
 
 #endif // RASPBERRY_LCD_H

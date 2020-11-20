@@ -73,17 +73,21 @@ void sendCommand(LCDScreen* screen, uint8_t command);
 ```
 Sends a command to the LCD screen. If a command takes parameters, you can supply them by bitwise ORing them with the command name:
 
-* `SCREEN_CLEAR` clears the display. Use `clearScreen()` instead (WIP).
+* `SCREEN_CLEAR` clears the display. Use `clearScreen()` instead.
 
-* `CURSOR_RETURN` sets the cursor to (0, 0). Use `cursorReturn()` instead (WIP).
+* `CURSOR_RETURN` sets the cursor to (0, 0). Use `cursorReturn()` instead.
 
-* `INPUT_SET` sets the writing direction. Use `setWritingDirection()` instead (WIP).
+* `INPUT_SET` sets the writing direction. Use `setWritingDirection()` instead.
    * Either `LEFT_TO_RIGHT` or `RIGHT_TO_LEFT`
 
-* `DISPLAY_SWITCH` can turn the display on/off and change the cursor style
+* `DISPLAY_SWITCH` can turn the display on/off and change the cursor style. Use `setDisplaySettings()` instead.
    * `DISPLAY_ON` / `DISPLAY_OFF`
    * `CURSOR_ON` / `CURSOR_OFF`
    * `CURSOR_BLINK` / `CURSOR_STATIC`
+
+* `SHIFT` shifts either the cursor or the entire display. Use `shiftCursor()` or `shiftScreen()` instead.
+   * `DISPLAY_SHIFT` / `CURSOR_SHIFT`
+   * `RIGHT_SHIFT` / `LEFT_SHIFT`
 
 * `FUNCTION_SET` if you're using this you're using this library wrong
 
@@ -111,6 +115,41 @@ This function sends a variable number of characters to the screen. Use `sendText
 ***
 
 ```c
-void setCursor(LCDScreen* screen, uint8_t x, uint8_t y);
+void clearScreen(LCDScreen* screen);
+```
+This function clears the screen
+
+***
+
+```c
+void returnCursor(LCDScreen* screen);
+```
+This function sets the cursor position to (0, 0)
+
+***
+
+```c
+void setWritingDirection(LCDScreen* screen, direction);
+```
+This function sets the writing direction of the display. Can either be `LEFT_TO_RIGHT` or `RIGHT_TO_LEFT`.
+
+***
+
+```c
+void shiftCursor(LCDScreen* screen, direction);
+```
+This function shifts the cursor in the specified direction. `RIGHT_SHIFT` or `LEFT_SHIFT`.
+
+***
+
+```c
+void shiftScreen(LCDScreen* screen, direction);
+```
+This function shifts the entire screen in the specified direction. `RIGHT_SHIFT` or `LEFT_SHIFT`.
+
+***
+
+```c
+void setCursor(LCDScreen* screen, x, y);
 ```
 This function sets the cursor position on the display.

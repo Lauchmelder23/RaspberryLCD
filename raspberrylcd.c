@@ -244,8 +244,3 @@ void sendChars(LCDScreen* screen, size_t len, ...)
 
     va_end(args);
 }
-
-void setCursor(LCDScreen* screen, uint8_t x, uint8_t y)
-{
-    sendCommand(screen, DDRAM_AD_SET | (y << 6) | x);
-}

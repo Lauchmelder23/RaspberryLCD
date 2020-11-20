@@ -9,6 +9,10 @@ int main(void)
     sendText(&screen, "スウェーデン");
     setCursor(&screen, 0, 1);
     sendText(&screen, "オーストラリア");
+    shiftScreen(&screen, RIGHT_SHIFT);
+    shiftScreen(&screen, RIGHT_SHIFT);
+    shiftScreen(&screen, RIGHT_SHIFT);
+    setDisplaySettings(&screen, DISPLAY_ON, CURSOR_OFF, CURSOR_STATIC);
     resetPins(&screen);
 
     return 0;
