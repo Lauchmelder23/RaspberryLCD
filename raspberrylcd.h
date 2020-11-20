@@ -133,33 +133,57 @@
 #include <stdint.h>
 #include <stdarg.h>
 
+// Just a wrapper for the delay() function from WiringPi
 extern void waitMs(uint32_t ms);
 
+// A struct containing the info about pin connections
 typedef struct {
     uint8_t RS, RW, E, D0, D1, D2, D3, D4, D5, D6, D7;
     uint8_t interface_bits;
 } LCDScreen;
 
+// Set the fields of LCDScreen to the according values. The user could also set them directly
+// without calling this function
 extern LCDScreen* configurePins(LCDScreen* screen, uint8_t RS, uint8_t RW, uint8_t E, 
                                 uint8_t D0, uint8_t D1, uint8_t D2, uint8_t D3,
                                 uint8_t D4, uint8_t D5, uint8_t D6, uint8_t D7);
 
+// Performs the initialization sequence for the LCD screen
 extern void initScreen(LCDScreen* screen, uint8_t interface_bits, uint8_t num_lines, uint8_t fontType, uint8_t cursor, uint8_t writeDirection);
+
+// Pulls every pin low
 extern void resetPins(LCDScreen* screen);
 
+
+// Sends a command to the LCD screen
 extern void sendCommand(LCDScreen* screen, uint8_t command);
+
+// Sends a character to the LCD screen
 extern void sendData(LCDScreen* screen, uint8_t data);
+
+// Sends a string of text to the LCD screen
 extern void sendText(LCDScreen* screen, const char* text);
+
+// Sends a list of chars to the LCD screen
 extern void sendChars(LCDScreen* screen, unsigned int len, ...);
 
+// Writes a custom character into CGRAM
 extern void loadCustomChar(LCDScreen* screen, uint8_t cgram_addr, ...);
 
+
+// Clears the screen
 #define clearScreen(screen)                                                     sendCommand(screen, SCREEN_CLEAR)
+// Sets cursor to (0, 0)
 #define returnCursor(screen)                                                    sendCommand(screen, CURSOR_RETURN); 
+// Sets the writing direction
 #define setWritingDirection(screen, direction)                                  sendCommand(screen, INPUT_SET | direction)
+// Turns display on/off and changes cursor behaviour
 #define setDisplaySettings(screen, display, cursor_shown, cursor_behaviour)     sendCommand(screen, DISPLAY_SWITCH | display | cursor_shown | cursor_behaviour)
+// Moves cursor by one cell to the left or right
 #define shiftCursor(screen, direction)                                          sendCommand(screen, SHIFT | CURSOR_SHIFT | direction)
+// Shifts screen by one cell to the left or right
 #define shiftScreen(screen, direction)                                          sendCommand(screen, SHIFT | DISPLAY_SHIFT | direction)
+// Sets the cursor position
 #define setCursor(screen, x, y)                                                 sendCommand(screen, DDRAM_AD_SET | (y << 6) | x)
 
 #endif // RASPBERRY_LCD_H

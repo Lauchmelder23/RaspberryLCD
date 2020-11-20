@@ -13,6 +13,7 @@ LCDScreen* configurePins(LCDScreen* screen, uint8_t RS, uint8_t RW, uint8_t E,
                         uint8_t D0, uint8_t D1, uint8_t D2, uint8_t D3,
                         uint8_t D4, uint8_t D5, uint8_t D6, uint8_t D7)
 {
+    // Simply set all the fields to the supplied pins
     screen->RS = RS;
     screen->RW = RW;
     screen->E = E;
@@ -26,6 +27,7 @@ LCDScreen* configurePins(LCDScreen* screen, uint8_t RS, uint8_t RW, uint8_t E,
     screen->D6 = D6;
     screen->D7 = D7;
 
+    // Initialize the pins to be output
     wiringPiSetup();
     pinMode(screen->RS, OUTPUT);
     pinMode(screen->RW, OUTPUT);
@@ -45,17 +47,25 @@ LCDScreen* configurePins(LCDScreen* screen, uint8_t RS, uint8_t RW, uint8_t E,
 
 void initScreen(LCDScreen* screen, uint8_t interface_bits, uint8_t num_lines, uint8_t fontType, uint8_t cursor, uint8_t writeDirection)
 {
+    // Set interface bits of screen
     screen->interface_bits = interface_bits;
-    sendCommand(screen, (FUNCTION_SET | HALF_BYTE_INTERFACE) >> 4);
+    
+    // Tell LCD screen to operate in intended bit mode
+    sendCommand(screen, (FUNCTION_SET | interface_bits) >> 4);
 
+    // Set number of display lines and font type
     sendCommand(screen, FUNCTION_SET | num_lines | fontType);
+    // Turn display on and set cursor
     sendCommand(screen, DISPLAY_SWITCH | DISPLAY_ON | cursor);
+    // Clear screen
     sendCommand(screen, SCREEN_CLEAR);
+    // Set write direction
     sendCommand(screen, INPUT_SET | writeDirection);
 }
 
 void resetPins(LCDScreen* screen)
 {
+    // Pull all pins low
     digitalWrite(screen->D7, LOW);
     digitalWrite(screen->D6, LOW);
     digitalWrite(screen->D5, LOW);
@@ -70,14 +80,20 @@ void resetPins(LCDScreen* screen)
     digitalWrite(screen->RS, LOW);
 }
 
+// A helper function to send bytes to the screen
+// This function is not visible to the user
 void helper_send(LCDScreen* screen, uint8_t byte)
 {
+    // Pull Enable high
     digitalWrite(screen->E, HIGH);
+
+    // Write high nibble
     digitalWrite(screen->D7, (byte >> 7) & 0x1);
     digitalWrite(screen->D6, (byte >> 6) & 0x1);
     digitalWrite(screen->D5, (byte >> 5) & 0x1);
     digitalWrite(screen->D4, (byte >> 4) & 0x1);
 
+    // If we're in 8-bit mode, write the lower nibbles as well
     if(screen->interface_bits == FULL_BYTE_INTERFACE)
     {
         digitalWrite(screen->D3, (byte >> 3) & 0x1);
@@ -85,6 +101,7 @@ void helper_send(LCDScreen* screen, uint8_t byte)
         digitalWrite(screen->D1, (byte >> 1) & 0x1);
         digitalWrite(screen->D0, (byte >> 0) & 0x1);
     }
+    // If in 4-bit, then send the high nibbles and then set the lower nibbles
     else if(screen->interface_bits == HALF_BYTE_INTERFACE)
     {
         delayMicroseconds(1000);
@@ -99,12 +116,14 @@ void helper_send(LCDScreen* screen, uint8_t byte)
         digitalWrite(screen->D4, (byte >> 0) & 0x1);        
     }
     
+    // Send the data supplied on the pins
     delayMicroseconds(1000);
 
     digitalWrite(screen->E, LOW);
     delayMicroseconds(10000);
 }
 
+// Sends a command by pulling RW and RS low
 void sendCommand(LCDScreen* screen, uint8_t command)
 {
     digitalWrite(screen->RW, LOW);
@@ -113,6 +132,7 @@ void sendCommand(LCDScreen* screen, uint8_t command)
     helper_send(screen, command);
 }
 
+// Sends a character by pulling only RW low
 void sendData(LCDScreen* screen, uint8_t data)
 {
     digitalWrite(screen->RW, LOW);
@@ -121,6 +141,7 @@ void sendData(LCDScreen* screen, uint8_t data)
     helper_send(screen, data);   
 }
 
+// Loops over a char* and sends each character individually. Supports the katakana and math as well
 void sendText(LCDScreen* screen, const char* text)
 {
     for(const char* c = text; *c != '\x00'; c++)
@@ -234,6 +255,7 @@ void sendText(LCDScreen* screen, const char* text)
     }
 }
 
+// Sends a list of chars, similar to sendText
 void sendChars(LCDScreen* screen, size_t len, ...)
 {
     va_list args;
@@ -245,14 +267,19 @@ void sendChars(LCDScreen* screen, size_t len, ...)
     va_end(args);
 }
 
+// Loads a custom character into CGRAM
 void loadCustomChar(LCDScreen* screen, uint8_t cgram_addr, ...)
 {
+    // Initialize va_args
     va_list args;
     va_start(args, cgram_addr);
 
+    // Choose correct scram address
     sendCommand(screen, CGRAM_AD_SET | (cgram_addr << 3));
+    // Write data to RAM
     for(int i = 0; i < 8; i++)
         sendData(screen, va_arg(args, int));
 
+    // Free va_args
     va_end(args);
 }
