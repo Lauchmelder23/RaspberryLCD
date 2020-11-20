@@ -124,7 +124,49 @@ void sendData(LCDScreen* screen, uint8_t data)
 void sendText(LCDScreen* screen, const char* text)
 {
     for(const char* c = text; *c != '\x00'; c++)
-        sendData(screen, *c);
+    {
+        if(*c != '\xe3')
+        {
+            sendData(screen, *c);
+        }
+        else
+        {
+            uint16_t symbol = ((uint16_t)(*(c + 1)) << 8) | ((uint16_t)(*(c + 2)));
+
+            switch(symbol)
+            {
+                case 0x8080: sendData(screen, ' '); break;
+                case 0x8081: sendData(screen, JAPANESE_COMMA); break;
+                case 0x8082: sendData(screen, JAPANESE_PERIOD); break;
+                case 0x808C: sendData(screen, JAPANESE_QUOTE_START); break;
+                case 0x808D: sendData(screen, JAPANESE_QUOTE_END); break;
+                case 0x82A1: sendData(screen, JAPANESE_KATAKANA_CHIISAI_A); break;
+                case 0x82A2: sendData(screen, JAPANESE_KATAKANA_A); break;
+                case 0x82A3: sendData(screen, JAPANESE_KATAKANA_CHIISAI_I); break;
+                case 0x82A4: sendData(screen, JAPANESE_KATAKANA_I); break;
+                case 0x82A5: sendData(screen, JAPANESE_KATAKANA_CHIISAI_U); break;
+                case 0x82A6: sendData(screen, JAPANESE_KATAKANA_U); break;
+                case 0x82A7: sendData(screen, JAPANESE_KATAKANA_CHIISAI_E); break;
+                case 0x82A8: sendData(screen, JAPANESE_KATAKANA_E); break;
+                case 0x82A9: sendData(screen, JAPANESE_KATAKANA_CHIISAI_O); break;
+                case 0x82AA: sendData(screen, JAPANESE_KATAKANA_O); break;
+                case 0x82AB: sendData(screen, JAPANESE_KATAKANA_KA); break;
+                case 0x82AC: sendData(screen, JAPANESE_KATAKANA_KA); sendData(screen, JAPANESE_DAKUTEN); break;
+                case 0x82AD: sendData(screen, JAPANESE_KATAKANA_KI); break;
+                case 0x82AE: sendData(screen, JAPANESE_KATAKANA_KI); sendData(screen, JAPANESE_DAKUTEN); break;
+                case 0x82AF: sendData(screen, JAPANESE_KATAKANA_KU); break;
+                case 0x82B0: sendData(screen, JAPANESE_KATAKANA_KU); sendData(screen, JAPANESE_DAKUTEN); break;
+                case 0x82B1: sendData(screen, JAPANESE_KATAKANA_KE); break;
+                case 0x82B2: sendData(screen, JAPANESE_KATAKANA_KE); sendData(screen, JAPANESE_DAKUTEN); break;
+                case 0x82B3: sendData(screen, JAPANESE_KATAKANA_KO); break;
+                case 0x82B4: sendData(screen, JAPANESE_KATAKANA_KO); sendData(screen, JAPANESE_DAKUTEN); break;
+
+                default: printf("Unknown char: %x\n", symbol); sendData(screen, CURSOR); break;
+            }
+            c += 2;
+        }
+        
+    }
 }
 
 void sendChars(LCDScreen* screen, size_t len, ...)
