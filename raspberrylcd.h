@@ -131,6 +131,7 @@
 #define CURSOR                          0b11111111
 
 #include <stdint.h>
+#include <stdarg.h>
 
 extern void waitMs(uint32_t ms);
 
@@ -151,8 +152,10 @@ extern void sendData(LCDScreen* screen, uint8_t data);
 extern void sendText(LCDScreen* screen, const char* text);
 extern void sendChars(LCDScreen* screen, unsigned int len, ...);
 
+extern void loadCustomChar(LCDScreen* screen, uint8_t cgram_addr, ...);
+
 #define clearScreen(screen)                                                     sendCommand(screen, SCREEN_CLEAR)
-#define returnCursor(screen)                                                    sendCommand(screen, CURSOR_RETURN)
+#define returnCursor(screen)                                                    sendCommand(screen, CURSOR_RETURN); 
 #define setWritingDirection(screen, direction)                                  sendCommand(screen, INPUT_SET | direction)
 #define setDisplaySettings(screen, display, cursor_shown, cursor_behaviour)     sendCommand(screen, DISPLAY_SWITCH | display | cursor_shown | cursor_behaviour)
 #define shiftCursor(screen, direction)                                          sendCommand(screen, SHIFT | CURSOR_SHIFT | direction)

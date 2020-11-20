@@ -115,6 +115,19 @@ This function sends a variable number of characters to the screen. Use `sendText
 ***
 
 ```c
+void loadCustomChar(LCDScreen* screen, uint8_t cgram_addr, ...);
+```
+This function writes a custom character into the CGRAM of the LCD screen. `cgram_addr` can be any number from `0x0` to `0xF`. Hence you can have up to 16 custom characters at once in memory. 
+
+After the address the function expects 8 bytes of character data. The lower 5 bits encode the pixel data, where 0 stands for black and 1 for white.
+
+After loading a character you can write it by using the CGRAM address as a character byte for the `sendData` function (e.g. `sendData(&screen, 0)` will send the character at CGRAM address `0x0`).
+
+WARNING: Writing to CGRAM moves the cursor, so keep that in mind when you try to write characters to memory.
+
+***
+
+```c
 void clearScreen(LCDScreen* screen);
 ```
 This function clears the screen

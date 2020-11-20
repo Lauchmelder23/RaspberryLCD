@@ -244,3 +244,15 @@ void sendChars(LCDScreen* screen, size_t len, ...)
 
     va_end(args);
 }
+
+void loadCustomChar(LCDScreen* screen, uint8_t cgram_addr, ...)
+{
+    va_list args;
+    va_start(args, cgram_addr);
+
+    sendCommand(screen, CGRAM_AD_SET | (cgram_addr << 3));
+    for(int i = 0; i < 8; i++)
+        sendData(screen, va_arg(args, int));
+
+    va_end(args);
+}
