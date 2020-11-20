@@ -151,4 +151,6 @@ extern void sendData(LCDScreen* screen, uint8_t data);
 extern void sendText(LCDScreen* screen, const char* text);
 extern void sendChars(LCDScreen* screen, unsigned int len, ...);
 
+extern void setCursor(LCDScreen* screen, uint8_t x, uint8_t y);
+
 #endif // RASPBERRY_LCD_H

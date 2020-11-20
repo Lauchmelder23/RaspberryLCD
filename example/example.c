@@ -7,7 +7,7 @@ int main(void)
 
     initScreen(&screen, HALF_BYTE_INTERFACE, TWO_LINES, FONT_5x7, CURSOR_ON | CURSOR_BLINK, LEFT_TO_RIGHT);
     sendText(&screen, "スウェーデン");
-    sendCommand(&screen, DDRAM_AD_SET | 0x40);
+    setCursor(&screen, 0, 1);
     sendText(&screen, "オーストラリア");
     resetPins(&screen);
 

@@ -125,11 +125,7 @@ void sendText(LCDScreen* screen, const char* text)
 {
     for(const char* c = text; *c != '\x00'; c++)
     {
-        if(*c != '\xe3')
-        {
-            sendData(screen, *c);
-        }
-        else
+        if(*c == '\xe3')
         {
             uint16_t symbol = ((uint16_t)(*(c + 1)) << 8) | ((uint16_t)(*(c + 2)));
 
@@ -230,6 +226,11 @@ void sendText(LCDScreen* screen, const char* text)
             }
             c += 2;
         }
+        else
+        {
+            sendData(screen, *c);
+            
+        }
         
     }
 }
@@ -243,4 +244,9 @@ void sendChars(LCDScreen* screen, size_t len, ...)
         sendData(screen, (uint8_t)va_arg(args, int));
 
     va_end(args);
+}
+
+void setCursor(LCDScreen* screen, uint8_t x, uint8_t y)
+{
+    sendCommand(screen, DDRAM_AD_SET | (y << 6) | x);
 }
