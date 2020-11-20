@@ -2,6 +2,7 @@
 
 #include <wiringPi.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 void waitMs(uint32_t ms)
 {
@@ -124,4 +125,15 @@ void sendText(LCDScreen* screen, const char* text)
 {
     for(const char* c = text; *c != '\x00'; c++)
         sendData(screen, *c);
+}
+
+void sendChars(LCDScreen* screen, size_t len, ...)
+{
+    va_list args;
+    va_start(args, len);
+
+    for(size_t i = 0; i < len; i++)
+        sendData(screen, (uint8_t)va_arg(args, int));
+
+    va_end(args);
 }
